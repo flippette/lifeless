@@ -1,0 +1,11 @@
+[package]
+name = "lifeless"
+version = "0.1.0"
+edition = "2021"
+authors = ["flippette <quangdatle2006@outlook.com>"]
+license = "Unlicense"
+description = "A no_std-friendly library for implementing Conway's Game of Life"
+
+[dependencies]
+derive_more = "0.99.17"
+heapless = "0.8.0"
