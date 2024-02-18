@@ -7,3 +7,6 @@ license = "Unlicense"
 description = "A no_std-friendly library for implementing Conway's Game of Life"
 documentation = "https://docs.rs/lifeless"
 repository = "https://github.com/flippette/lifeless"
+
+[dev-dependencies]
+crossterm = "0.27.0"
