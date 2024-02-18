@@ -3,7 +3,7 @@ use core::ops::Not;
 ///
 /// A cell on a grid.
 ///
-#[derive(Clone, Copy, Debug, Default)]
+#[derive(Clone, Copy, PartialEq, Eq, Debug, Default)]
 #[repr(u8)]
 pub enum Cell {
     Alive = 1,
@@ -13,8 +13,8 @@ pub enum Cell {
 
 #[rustfmt::skip]
 impl Cell {
-    #[inline] pub fn is_alive(&self) -> bool { matches!(self, Self::Alive) }
-    #[inline] pub fn is_dead(&self) -> bool { !self.is_alive() }
+    #[inline] #[must_use] pub fn is_alive(&self) -> bool { matches!(self, Self::Alive) }
+    #[inline] #[must_use] pub fn is_dead(&self) -> bool { !self.is_alive() }
 }
 
 impl Not for Cell {

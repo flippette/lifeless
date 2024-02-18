@@ -17,9 +17,10 @@ pub struct Grid<const W: usize, const H: usize> {
 }
 
 impl<const W: usize, const H: usize> Grid<W, H> {
+    #[must_use]
     pub fn new() -> Self {
         Self {
-            cells: array::from_fn(|_| array::from_fn(|_| Cell::Dead)),
+            cells: [[Cell::Dead; W]; H],
             generation: 0,
         }
     }
@@ -31,12 +32,12 @@ impl<const W: usize, const H: usize> Grid<W, H> {
     /// [the Wiki page](https://www.wikiwand.com/en/Conway's_Game_of_Life).
     ///
     pub fn state_next(&self, coord: Coord) -> Cell {
-        let live_neighbors = coord
+        match coord
             .neighbors(Coord(W, H))
-            .filter(|&pos| self[pos].is_alive())
-            .count();
-
-        match live_neighbors {
+            .map(|pos| self[pos])
+            .filter(Cell::is_alive)
+            .count()
+        {
             0 | 1 | 4.. => Cell::Dead,
             2 => self[coord],
             3 => Cell::Alive,
@@ -44,6 +45,7 @@ impl<const W: usize, const H: usize> Grid<W, H> {
     }
 
     /// Calculates the next generation of this grid.
+    #[must_use]
     pub fn step(&self) -> Self {
         Self {
             cells: array::from_fn(|y| array::from_fn(|x| self.state_next(Coord(x, y)))),
@@ -54,10 +56,8 @@ impl<const W: usize, const H: usize> Grid<W, H> {
 
 #[rustfmt::skip]
 impl<const W: usize, const H: usize> Grid<W, H> {
-    #[inline] pub fn columns(&self) -> usize { self.cells[0].len() }
-    #[inline] pub fn rows(&self) -> usize { self.cells.len() }
-    #[inline] pub fn cells(&self) -> &[[Cell; W]; H] { &self.cells }
-    #[inline] pub fn generation(&self) -> &u64 { &self.generation }
+    #[inline] #[must_use] pub fn cells(&self) -> &[[Cell; W]; H] { &self.cells }
+    #[inline] #[must_use] pub fn generation(&self) -> &u64 { &self.generation }
     #[inline] pub fn set(&mut self, pos: Coord, state: Cell) { self[pos] = state }
     #[inline] pub fn toggle(&mut self, pos: Coord) { self.set(pos, !self[pos]) }
 }

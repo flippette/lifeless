@@ -24,6 +24,7 @@ impl Coord {
     /// Returns the neighbors of a [`Coord`].
     ///
     #[rustfmt::skip]
+    #[must_use]
     pub fn neighbors(&self, extents: Self) -> Neighbors {
         macro_rules! pos {
             (L) => { self.0 == 0 };
@@ -59,13 +60,13 @@ impl Coord {
 
 #[rustfmt::skip]
 impl Coord {
-    #[inline] pub fn x(&self) -> usize { self.0 }
-    #[inline] pub fn y(&self) -> usize { self.1 }
+    #[inline] #[must_use] pub fn x(&self) -> usize { self.0 }
+    #[inline] #[must_use] pub fn y(&self) -> usize { self.1 }
 
-    #[inline] pub fn up(&self) -> Self { Self(self.0, self.1 - 1) }
-    #[inline] pub fn down(&self) -> Self { Self(self.0, self.1 + 1) }
-    #[inline] pub fn left(&self) -> Self { Self(self.0 - 1, self.1) }
-    #[inline] pub fn right(&self) -> Self { Self(self.0 + 1, self.1) }
+    #[inline] #[must_use] pub fn up(&self) -> Self { Self(self.0, self.1 - 1) }
+    #[inline] #[must_use] pub fn down(&self) -> Self { Self(self.0, self.1 + 1) }
+    #[inline] #[must_use] pub fn left(&self) -> Self { Self(self.0 - 1, self.1) }
+    #[inline] #[must_use] pub fn right(&self) -> Self { Self(self.0 + 1, self.1) }
 }
 
 impl Add<Self> for Coord {
