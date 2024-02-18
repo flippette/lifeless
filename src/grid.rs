@@ -1,32 +1,25 @@
 use core::{
-    iter,
+    array,
     ops::{Index, IndexMut},
 };
 
-use heapless::Vec;
-
-use crate::{
-    cell::Cell,
-    math::{svec2, SVec2},
-};
+use crate::{cell::Cell, math::Coord};
 
 ///
 /// The Game of Life cell grid.
 ///
-/// [`SVec2`]-based indices start from `(1, 1)` to `(W, H)`.
+/// [`Coord`]-based indices are in the range `(0..W, 0..H)`.
 ///
 #[derive(Clone, Debug)]
 pub struct Grid<const W: usize, const H: usize> {
-    cells: Vec<Vec<Cell, W>, H>,
+    cells: [[Cell; W]; H],
     generation: u64,
 }
 
 impl<const W: usize, const H: usize> Grid<W, H> {
     pub fn new() -> Self {
         Self {
-            cells: Vec::from_iter(
-                iter::repeat(Vec::from_iter(iter::repeat(Cell::Dead).take(W))).take(H),
-            ),
+            cells: array::from_fn(|_| array::from_fn(|_| Cell::Dead)),
             generation: 0,
         }
     }
@@ -37,16 +30,15 @@ impl<const W: usize, const H: usize> Grid<W, H> {
     /// Rules are in accordance to
     /// [the Wiki page](https://www.wikiwand.com/en/Conway's_Game_of_Life).
     ///
-    pub fn state_next(&self, pos: SVec2) -> Cell {
-        let live_neighbors = pos
-            .neighbors(svec2(W, H))
-            .into_iter()
+    pub fn state_next(&self, coord: Coord) -> Cell {
+        let live_neighbors = coord
+            .neighbors(Coord(W, H))
             .filter(|&pos| self[pos].is_alive())
             .count();
 
         match live_neighbors {
             0 | 1 | 4.. => Cell::Dead,
-            2 => self[pos],
+            2 => self[coord],
             3 => Cell::Alive,
         }
     }
@@ -54,9 +46,7 @@ impl<const W: usize, const H: usize> Grid<W, H> {
     /// Calculates the next generation of this grid.
     pub fn step(&self) -> Self {
         Self {
-            cells: Vec::from_iter(
-                (1..=H).map(|y| Vec::from_iter((1..=W).map(|x| self.state_next(svec2(x, y))))),
-            ),
+            cells: array::from_fn(|y| array::from_fn(|x| self.state_next(Coord(x, y)))),
             generation: self.generation() + 1,
         }
     }
@@ -64,10 +54,12 @@ impl<const W: usize, const H: usize> Grid<W, H> {
 
 #[rustfmt::skip]
 impl<const W: usize, const H: usize> Grid<W, H> {
-    #[inline] pub fn cells(&self) -> &Vec<Vec<Cell, W>, H> { &self.cells }
+    #[inline] pub fn columns(&self) -> usize { self.cells[0].len() }
+    #[inline] pub fn rows(&self) -> usize { self.cells.len() }
+    #[inline] pub fn cells(&self) -> &[[Cell; W]; H] { &self.cells }
     #[inline] pub fn generation(&self) -> &u64 { &self.generation }
-    #[inline] pub fn set(&mut self, pos: SVec2, state: Cell) { self[pos] = state }
-    #[inline] pub fn toggle(&mut self, pos: SVec2) { self.set(pos, !self[pos]) }
+    #[inline] pub fn set(&mut self, pos: Coord, state: Cell) { self[pos] = state }
+    #[inline] pub fn toggle(&mut self, pos: Coord) { self.set(pos, !self[pos]) }
 }
 
 impl<const W: usize, const H: usize> Default for Grid<W, H> {
@@ -76,16 +68,16 @@ impl<const W: usize, const H: usize> Default for Grid<W, H> {
     }
 }
 
-impl<const W: usize, const H: usize> Index<SVec2> for Grid<W, H> {
+impl<const W: usize, const H: usize> Index<Coord> for Grid<W, H> {
     type Output = Cell;
 
-    fn index(&self, index: SVec2) -> &Self::Output {
-        &self.cells[index.y() - 1][index.x() - 1]
+    fn index(&self, index: Coord) -> &Self::Output {
+        &self.cells[index.1][index.0]
     }
 }
 
-impl<const W: usize, const H: usize> IndexMut<SVec2> for Grid<W, H> {
-    fn index_mut(&mut self, index: SVec2) -> &mut Self::Output {
-        &mut self.cells[index.y() - 1][index.x() - 1]
+impl<const W: usize, const H: usize> IndexMut<Coord> for Grid<W, H> {
+    fn index_mut(&mut self, index: Coord) -> &mut Self::Output {
+        &mut self.cells[index.1][index.0]
     }
 }

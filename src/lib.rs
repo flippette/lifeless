@@ -5,7 +5,7 @@
 //! See:
 //! - [`Cell`] for the cells.
 //! - [`Grid`] for the cell grid.
-//! - [`SVec2`] for the coordinates used in the cell grid.
+//! - [`Coord`] for the coordinates used in the cell grid.
 //!
 
 #![no_std]
@@ -17,4 +17,4 @@ pub mod math;
 
 pub use cell::Cell;
 pub use grid::Grid;
-pub use math::{svec2, SVec2};
+pub use math::Coord;
