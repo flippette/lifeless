@@ -11,12 +11,6 @@ pub enum Cell {
     Dead = 0,
 }
 
-#[rustfmt::skip]
-impl Cell {
-    #[inline] #[must_use] pub fn is_alive(&self) -> bool { matches!(self, Self::Alive) }
-    #[inline] #[must_use] pub fn is_dead(&self) -> bool { !self.is_alive() }
-}
-
 impl Not for Cell {
     type Output = Self;
 

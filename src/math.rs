@@ -90,9 +90,8 @@ impl Iterator for Neighbors {
 
     fn next(&mut self) -> Option<Self::Item> {
         loop {
-            match self.inner.next() {
-                None | Some(None) => {}
-                coord => break coord?,
+            if let Some(coord) = self.inner.next()? {
+                break Some(coord);
             }
         }
     }
